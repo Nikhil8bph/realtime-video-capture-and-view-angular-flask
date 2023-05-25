@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { VideoStreamComponent } from './_components/video-stream/video-stream.component';
 import { HttpClientModule } from '@angular/common/http';
 import { Socket, SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+import { FormsModule } from '@angular/forms';
 
 const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
 
@@ -16,7 +17,8 @@ const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
   imports: [
     BrowserModule,
     SocketIoModule.forRoot(config),
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

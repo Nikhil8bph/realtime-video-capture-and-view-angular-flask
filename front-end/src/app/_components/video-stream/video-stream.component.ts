@@ -14,19 +14,42 @@ export class VideoStreamComponent implements OnInit {
   frameInterval: any;
   idea: string = "hey";
   videoFlask: string;
+  selectedCamera: string;
+  cameras: MediaDeviceInfo[];
 
   constructor(private service: VideoConnectService, private socket: Socket) { } 
   
   ngOnInit(): void {
     // this.startstream();
+    this.enumerateDevices();
     this.videoElement.nativeElement.style.display = 'block';
+  }
+
+  enumerateDevices(): void {
+    navigator.mediaDevices.enumerateDevices()
+      .then((devices: MediaDeviceInfo[]) => {
+        this.cameras = devices.filter(device => device.kind === 'videoinput');
+        if (this.cameras.length > 0) {
+          this.selectedCamera = this.cameras[0].deviceId;
+        }
+      })
+      .catch((error: any) => {
+        console.error('Error enumerating devices:', error);
+      });
+  }
+
+  changeCamera(): void {
+    this.stopStream();
+    this.startStream();
   }
 
   startStream(): void {
     this.videoElement.nativeElement.style.display = 'block';
     this.capturing = true;
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then((stream: MediaStream) => {
+    navigator.mediaDevices.getUserMedia({ video: {
+      deviceId: this.selectedCamera ? { exact: this.selectedCamera } : undefined
+        } 
+      }).then((stream: MediaStream) => {
         this.videoStream = stream;
         this.videoElement.nativeElement.srcObject = stream;
         this.capturing = true;
