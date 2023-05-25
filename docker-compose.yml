@@ -1,0 +1,24 @@
+version: '2'
+services:
+  #Back-end Spring Boot Application
+  back-end:
+    #The docker file in scrum-app build the jar and provides the docker image with the following name.
+    build: ./back-end
+    container_name: back-end
+    restart: on-failure
+    ports:
+      - 5000:5000 # Forward the exposed port 8080 on the container to port 8080 on the host machine
+    image: nikhil8bph/realtimevideocapture:back-end
+
+  #Fron-end Angular Application
+  front-end:
+    build: ./front-end
+    container_name: front-end
+    restart: on-failure
+    ports:
+      - 80:80
+    links:
+      - back-end
+    depends_on:
+      - back-end
+    image: nikhil8bph/realtimevideocapture:front-end
