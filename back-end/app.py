@@ -3,38 +3,31 @@ import base64
 import cv2
 from flask_cors import CORS
 import numpy as np
+import utils
+import vehicle_detection
 # from flask_socketio import SocketIO
 
 app = Flask(__name__)
 CORS(app)
-# socketio = SocketIO(app,cors_allowed_origins="*")
+
+# Load YOLOv4-tiny model
+net = cv2.dnn.readNet("data/yolov4-tiny.weights", "data/yolov4-tiny.cfg")
+
+# Load class names
+with open("data/coco.names", "r") as f:
+    classes = f.read().splitlines()
 
 @app.route('/process_frame', methods=['POST'])
 def process_frame():
     frame_data = request.get_data()
-    # print(frame_data)
-    # image_data = frame_data.replace('data:image/jpeg;base64,', '')
-    image_data = frame_data.decode('utf-8').replace('data:image/jpeg;base64,', '')
-    
-    # Decode the base64 string to bytes
-    image_bytes = base64.b64decode(image_data)
-    image_array = np.frombuffer(image_bytes, dtype=np.uint8)
-    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-
-    # cv2.imshow("Vehicle Detection", image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # Encode the image as a base64 string
-    retval, buffer = cv2.imencode('.jpg', image)
-    bytes_image = base64.b64encode(buffer)
-    base64_image = bytes_image.decode('utf-8')
-
+    image = utils.convertBase64ToImage(frame_data)
+    # imageProcessed = vehicle_detection.get_vehicles(image,net,classes)
     response = {
-        # 'message': str(frame_data.decode('utf-8'))
-        'message': "data:image/jpeg;base64,"+str(base64_image)
-    }
+        'message': utils.convertImageToBase64(image)
+    } 
     return jsonify(response)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
