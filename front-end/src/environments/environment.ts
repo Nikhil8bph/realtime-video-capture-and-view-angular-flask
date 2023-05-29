@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  backend: 'http://957c-34-148-111-170.ngrok-free.app/'
+  backend: 'http://7fe0-35-243-183-33.ngrok-free.app/'
 };
 
 /*

@@ -3,7 +3,7 @@ import cv2
 # model.train(data='coco128.yaml', epochs=3)  # train the model
 
 def object_detection(image,model,names):
-    results = model(image)  # predict on an image
+    results = model.predict(image, device='cpu')  # predict on an image
     print("length of results : ", len(results))
     for result in results:
       print("length of cls : ",len(result.boxes.cls))

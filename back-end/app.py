@@ -20,7 +20,7 @@ names = model.names
 def process_frame():
     frame_data = request.get_data()
     image = utils.convertBase64ToImage(frame_data)
-    imageProcessed = vehicle_detection.get_vehicles(image,model,names)
+    imageProcessed = vehicle_detection.object_detection(image,model,names)
     response = {
         'message': utils.convertImageToBase64(image)
     } 
