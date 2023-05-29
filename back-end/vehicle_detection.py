@@ -1,52 +1,20 @@
+# Load YOLOv8n, train it on COCO128 for 3 epochs and predict an image with it
 import cv2
-import numpy as np
-import math
+# model.train(data='coco128.yaml', epochs=3)  # train the model
 
-def get_vehicles(image,net,classes):
-    # Set input size and scale
-    input_size = (416, 416)
-    scale = 1 / 255.0
-    # Preprocess image
-    blob = cv2.dnn.blobFromImage(image, scale, input_size, (0, 0, 0), True, crop=False)
-    net.setInput(blob)
-
-    # Run inference
-    try:
-        output_layers = net.getUnconnectedOutLayersNames()
-        outputs = net.forward(output_layers)
-    except cv2.error as e:
-        print("Error running inference:")
-        print(e)
-        exit(1)
-
-    # Process detections
-    for output in outputs:
-        for detection in output:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
-
-            if not math.isnan(confidence) and math.isfinite(confidence) and confidence > 0.5 and classes[class_id] == "person":
-                center_x = int(detection[0] * image.shape[1])
-                center_y = int(detection[1] * image.shape[0])
-                width = int(detection[2] * image.shape[1])
-                height = int(detection[3] * image.shape[0])
-
-                x = int(center_x - width / 2)
-                y = int(center_y - height / 2)
-
-                # Draw bounding box
-                cv2.rectangle(image, (x, y), (x + width, y + height), (0, 255, 0), 2)
-                label = f"{classes[class_id]}: {confidence:.2f}"
-                cv2.putText(image, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-    # Display result
-    # cv2.imshow("Vehicle Detection", image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+def object_detection(image,model,names):
+    results = model(image)  # predict on an image
+    print("length of results : ", len(results))
+    for result in results:
+      print("length of cls : ",len(result.boxes.cls))
+      print("length of results boxes : ",len(result.boxes))
+      for res_class,res_boundingbox in zip(result.boxes.cls,result.boxes):
+          x1=res_boundingbox.xyxy[0].cpu().numpy()[0]
+          y1=res_boundingbox.xyxy[0].cpu().numpy()[1]
+          x2=res_boundingbox.xyxy[0].cpu().numpy()[2]
+          y2=res_boundingbox.xyxy[0].cpu().numpy()[3]
+          cv2.rectangle(image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+            # Put label and score on the bounding box
+          text = f"{names[int(res_class)]}: {res_boundingbox.conf[0].cpu().numpy():.2f}"
+          cv2.putText(image, text, (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     return image
-
-
-
-
-
