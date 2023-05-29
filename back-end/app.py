@@ -5,11 +5,13 @@ from flask_cors import CORS
 import numpy as np
 import utils
 import vehicle_detection
+from flask_ngrok import run_with_ngrok
 from ultralytics import YOLO
 # from flask_socketio import SocketIO
 
 app = Flask(__name__)
 CORS(app)
+run_with_ngrok(app)
 
 model = YOLO('yolov8s.pt')  # load a pretrained YOLOv8n detection model
 names = model.names
@@ -27,4 +29,4 @@ def process_frame():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

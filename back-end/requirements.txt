@@ -3,4 +3,5 @@ flask_cors
 opencv-python
 numpy
 tensorflow
+flask-ngrok
 ultralytics
