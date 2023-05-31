@@ -4,4 +4,6 @@ opencv-python
 numpy
 tensorflow
 flask-ngrok
+sklearn2
+Keras
 ultralytics

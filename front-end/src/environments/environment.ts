@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  backend: 'http://7fe0-35-243-183-33.ngrok-free.app/'
+  backend: 'http://127.0.0.1:5000/'
 };
 
 /*
